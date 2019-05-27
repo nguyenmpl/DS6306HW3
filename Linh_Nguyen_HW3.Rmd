@@ -1,0 +1,210 @@
+---
+title: "Linh_Nguyen_HW3"
+author: "Linh Nguyen"
+date: "5/25/2019"
+output: html_document
+---
+
+## Question 1:
+<pre>
+<p style="color:DodgerBlue;">
+<b>GitHub Cloning (20 points):</b> Using Git, clone the following GitHub repository to your local machine: https://github.com/caesar0301/awesome-public-datasets. In RMarkdown, please show the code (commented out, as it’s not R syntax) that you used to create a new directory, navigate to the appropriate directory, and clone the
+repository to it. One Git command per line, please.
+</p>
+</pre>
+<pre>
+- Windows commands:
+  . mkdir c:\users\~~\Documents\R\DS6306\HW3\
+  . cd "C:\Program Files\Git"
+  . .\git-bash.exe
+  . $ cd ~/Documents/R/DS6306/HW3/
+  . $ git init
+  . $ git clone  https://github.com/caesar0301/awesome-public-datasets
+</pre>
+
+## Question 2:
+<pre>
+<p style="color:DodgerBlue;">
+<b>Data Summary (20 points):</b> From this aforementioned cloned repo, please extract titanic.csv.zip. To be clear, this does not have to be done in Git or command line.
+  a. In R, please read in titanic.csv via either read.table() or read.csv(), assigning it to df. This dataset follows the passengers aboard the Titanic, including their fees paid, rooms rented, and survivorship status.
+</p>
+</pre>
+``` {r, echo=TRUE}
+df <- read.csv(file="C:\\Users\\bibin\\Documents\\R\\DS6306\\HW3\\titanic.csv", header=TRUE, sep=",")
+```
+<pre>
+<p style="color:DodgerBlue;">
+  b. Output the respective count of females and males aboard the Titanic. Plot the frequency of females and males. Be sure to give an accurate title and label the axes.
+</p>
+</pre>
+
+``` {r, echo=TRUE}
+#install.packages("plyr")
+library("plyr")
+count(df, "Sex")
+barplot(table(df$Sex), main="Passenger Sex Freq", xlab="Sex", ylab="Count", ylim=c(0,700))
+```
+<pre>
+<p style="color:DodgerBlue;">
+  c. Please use one apply function (to review: swirl() modules 11, 12) to output the means of Age, Fare, and Survival. Make sure the output is a real number for all three means.
+</p>
+</pre>
+```{r, echo=TRUE}
+apply(df[, c("Survived", "Fare", "Age")], 2, mean, na.rm=TRUE)
+```
+## Question 3:
+<pre>
+<p style="color:DodgerBlue;">
+<b>Function Building (30 points):</b> You research sleep and just got your first data set. Later, you’ll have another dataset with the same column names, so you want to create a helper function that you can analyze this dataset and the next. Load sleep_data_01.csv (found at http://talklab.psy.gla.ac.uk/L1_labs/lab_1/homework/index.html). Questions 3A through 3D should be answered in function(x){}. 3E can be outside of the function.
+  a. Create objects for the median Age, the minimum and maximum Duration of sleep, and the mean and standard deviation of the Rosenberg Self Esteem scale (RSES). You may need to specify a few options like in Problem 2 and live session.
+</p>
+</pre>
+```{r, echo = TRUE}
+sleepDf <- read.csv(file="C:\\Users\\bibin\\Downloads\\DS6306\\sleep_data_01.csv", header = TRUE, sep = ",")
+myFunction <- function(x) {
+  AgeMedian <- median(x[, c("Age")], na.rm = TRUE)
+  SleepMean <- min(x[, c("Duration")], na.rm = TRUE)
+  SleepMax <- max(x[, c("Duration")], na.rm = TRUE)
+  RSESMean <- mean(x[, c("RSES")], na.rm = TRUE)
+  RSESStdD <- sd(x[, c("RSES")], na.rm = TRUE)
+  return (data.frame("AgeMedian" = AgeMedian, "SleepDurationMean" = SleepMean, "SleepDurationMax" = SleepMax, "RSESMean" = RSESMean, "RSESStandardDeviation" = RSESStdD))
+}
+
+```
+<pre>
+<p style="color:DodgerBlue;">
+  b. Create a data.frame object called report: it should consist of the median age, the RSES mean and standard deviation respectively divided by five (since there are five questions and these scores are summed), and the range of Duration (the statistical definition of range; it should be a single number.)
+</p>
+</pre>
+``` {r, echo = TRUE}
+myFunction2 <- function(x) {
+  DurationRange <- max(x[, c("Duration")], na.rm = TRUE) - min(x[, c("Duration")], na.rm = TRUE)
+  Rc <- myFunction(x)
+  report <- data.frame("MeanMedianAge" = Rc[, c("AgeMedian")]/5
+                     , "MeanRSESMean" = Rc[, c("RSESMean")]/5
+                    , "MeanRSESSD" = Rc[, c("RSESStandardDeviation")]/5
+                    , "DurationRange" = DurationRange)
+  return (report)
+}
+
+```
+<pre>
+<p style="color:DodgerBlue;">
+  c. Change the column names of this data.frame to MedianAge, SelfEsteem, SE_SD, and DurationRange.
+</p>
+</pre>
+``` {r, echo = TRUE}
+myFunction3 <- function(x) {
+  myDf2 <- myFunction2(x)
+  names(myDf2) <- c("MedianAge", "SelfEsteem", "SE_SD", "DurationRange")
+  return (myDf2)
+}
+
+```
+<pre>
+<p style="color:DodgerBlue;">
+  d. Round the report to at most 2 digits: leave this as the closing line to the function.
+</p>
+</pre>
+``` {r, echo = TRUE}
+myFunction4 <- function(x) {
+  round(x, digits = 2)
+}
+
+```
+<pre>
+<p style="color:DodgerBlue;">
+  e. Finally, run the function on your sleep data to show the output.
+</p>
+</pre>
+```{r, echo = TRUE}
+myFunction(sleepDf)
+myFunction2(sleepDf)
+myFunction3(sleepDf)
+myFunction4(myFunction3(sleepDf))
+```
+## Question 4:
+<pre><p style="color:DodgerBlue;">
+<b>FiveThirtyEight Data (30 points):</b> Navigate on GitHub to https://github.com/rudeboybert/fivethirtyeight and read README.md. It will include everything you need.
+  a. Install the fivethirtyeight package.
+</p></pre>
+install.packages("fivethirtyeight")
+library(fivethirtyeight)
+<pre><p style="color:DodgerBlue;">
+  b. In the listing of Data sets in package ‘fivethirtyeight,’ assign the 22nd data set to an object ‘df.’
+</p></pre>
+```{r, echo = TRUE}
+twentysecondName <- data(package = "fivethirtyeight")$result[,"Item"][22]
+twentysecondName
+df <- fivethirtyeight::college_recent_grads
+```
+<pre><p style="color:DodgerBlue;">
+  c. Use a more detailed list of the data sets to write out the URL in a comment to the related news story.
+</p></pre>
+```{r, echo = TRUE}
+?fivethirtyeight::college_recent_grads
+```
+<pre><p style="color:DodgerBlue;">
+  d. Using R command(s), give the dimensions and column names of this data frame.
+</p>
+</pre>
+```{r, echo = TRUE}
+dim(df)
+names(df)
+```
+## Question 5:
+<pre>
+<p style="color:DodgerBlue;">
+<b>Data Summary (30 points):</b> Use your newly assigned data frame from question 4 for this question.
+  a. Write an R command that gives you the column names of the data frame. Right after that, write one that counts the number of columns but not rows. Hint: The number should match one of your numbers in Question 1d for dimensions.
+</p></pre>
+```{r, echo = TRUE}
+names(df)
+length(names(df))
+```
+<pre><p style="color:DodgerBlue;">
+  b. Generate a count of each unique major_category in the data frame. I recommend using libraries to help. To be clear, this should look like a matrix or data frame containing the major_category and the frequency it occurs in the dataset. Assign it to major_count.
+</p></pre>
+```{r, echo = TRUE}
+library("plyr")
+major_count <- count(df, "major_category")
+```
+<pre><p style="color:DodgerBlue;">
+  c. To make things easier to read, put par(las=2) before your plot to make the text perpendicular to the axis. Make a barplot of major_count. Make sure to label the title with something informative (check the vignette if you need), label the x and y axis, and make it any color other than grey. Assign the major_category labels to their respective
+bar. Flip the barplot horizontally so that bars extend to the right, not upward. All of these options can be done in a single pass of barplot(). Note: It’s okay if it’s wider than the preview pane.
+</p></pre>
+```{r, echo = TRUE}
+par(mar = c(5, 15, 2, 3), cex = 0.8)
+barplot(major_count$freq, names.arg = major_count$major_category, las = 2, main = "Recent Grads Major Count", xlim = c(0, 30), ylab = "Count", xlab = "Study Major", horiz = TRUE, col = 'dodgerblue', axes = TRUE, axisnames = TRUE)
+```
+<pre><p style="color:DodgerBlue;">
+  d. Write the fivethirtyeight data to a csv file. Make sure that it does not have row labels.
+</p></pre>
+```{r, echo = TRUE}
+write.csv(df, file = "College_Recent_Grads.csv",row.names = FALSE, na = "")
+```
+## Question 6:
+<pre><p style="color:DodgerBlue;">
+<b>Codebook (30 points):</b>
+  a. Start a new repository on GitHub for your SMU MSDS homework. On your local device, make sure there is a directory for Homework at the minimum; you are welcome to add whatever you would like to this repo in addition to your requirements here.
+</p></pre>
+<pre><p style="color:DodgerBlue;">
+  b. Create a README.md file which explains the purpose of the repository, the topics included, the sources for the material you post, and contact information in case of questions. Remember, the one in the root directory should be general. You are welcome to make short READMEs for each assignment individually in other folders.
+</p></pre>
+<pre><b>git-bash commands:</b>
+
+  echo "# DS6306HW3" >> ~/Documents/R/DS6306/HW3/Homework/README.md
+  echo "Repository for DS6306HW3" >> ~/Documents/R/DS6306/HW3/Homework/README.md
+  echo "Included data was from FiveThirtyEight GitHub repository" >> ~/Documents/R/DS6306/HW3/Homework/README.md
+  echo "contact info: linhnguyen@smu.edu" >> ~/Documents/R/DS6306/HW3/Homework/README.md
+  git init
+  git add README.md
+  git commit -m "first commit"
+  git remote add origin https://github.com/nguyenmpl/DS6306HW3.git
+  git push -u origin master
+</pre>
+<pre><p style="color:DodgerBlue;">
+  c. In one (or more) of the nested directories, post your RMarkdown script, HTML file, and data from ‘fivethirtyeight.’ Make sure that in your README or elsewhere that you credit fivethirtyeight in some way.
+  d. In your RMarkdown script, please provide the link to this GitHub so the grader can see it.
+</p></pre>
+https://github.com/nguyenmpl/DS6306HW3
